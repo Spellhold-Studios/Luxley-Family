@@ -1,7 +1,7 @@
-BACKUP ~luxleysoa/backup~
+BACKUP ~weidu_external/luxleysoa/backup~
 
 //AUTHOR ~feuille_sakaki@spellholdstudios.net~
-SUPPORT ~SHS Staff at http://www.shsforums.net/forum/324-luxley-family~
+SUPPORT ~https://github.com/Spellhold-Studios/Luxley-Family~
 
 VERSION ~v2.1.0~
 
@@ -9,83 +9,90 @@ README ~luxleysoa/readme/luxleysoa-readme-english.html~
 
 ALWAYS
 
-	ACTION_IF NOT VARIABLE_IS_SET bg2_chapter BEGIN // Always block must run only once per install!
+  ACTION_IF NOT VARIABLE_IS_SET bg2_chapter BEGIN // Always block must run only once per install!
 
-		/* ----------------------------------------- *
-		 *    Determines which game is installed.    *
-		 * ----------------------------------------- */
+    /* ----------------------------------------- *
+     *    Determines which game is installed.    *
+     * ----------------------------------------- */
 
-		OUTER_SET is_tob   = (GAME_IS ~bgt tob tutu tutu_totsc~) ? 1 : 0     // based on vanilla ToB engine
-		OUTER_SET is_bg2ee = (GAME_IS "bg2ee") ? 1 : 0                       // b2gee
-		OUTER_SET is_eet   = (GAME_IS "eet") ? 1 : 0                         // eet
-		OUTER_SET is_ee    = (GAME_IS ~bg2ee eet~) ? 1 : 0                   // EE game
-		OUTER_SET is_tobex = (FILE_EXISTS ~tobex_ini/tobexcore.ini~) ? 1 : 0 // ToBEx is installed
+    OUTER_SET is_tob   = (GAME_IS ~bgt tob tutu tutu_totsc~) ? 1 : 0     // based on vanilla ToB engine
+    OUTER_SET is_bg2ee = (GAME_IS "bg2ee") ? 1 : 0                       // b2gee
+    OUTER_SET is_eet   = (GAME_IS "eet") ? 1 : 0                         // eet
+    OUTER_SET is_ee    = (GAME_IS ~bg2ee eet~) ? 1 : 0                   // EE game
+    OUTER_SET is_tobex = (FILE_EXISTS ~tobex_ini/tobexcore.ini~) ? 1 : 0 // ToBEx is installed
 
-		/* ------------------------------------------------------- *
-		 *    Sets default variables if they're not set already    *
-		 * ------------------------------------------------------- */
+    /* ------------------------------------------------------- *
+     *    Sets default variables if they're not set already    *
+     * ------------------------------------------------------- */
 
-		// Variable used to properly install specific EE games ressources
-		ACTION_IF (is_ee) BEGIN
-			OUTER_SPRINT ee_file "_ee"
-		END ELSE BEGIN
-			OUTER_SPRINT ee_file ""
-		END
+    // Variable used to properly install specific EE games ressources
+    ACTION_IF (is_ee) BEGIN
+      OUTER_SPRINT ee_file "_ee"
+    END ELSE BEGIN
+      OUTER_SPRINT ee_file ""
+    END
 
-		// Variable used to properly install Sebastian kit
-		ACTION_IF (is_ee OR is_tobex) BEGIN
-			OUTER_SET kits_lim_256  = 0
-		END ELSE BEGIN
-			OUTER_SET kits_lim_256  = 1
-		END
+    // Variable used to properly install Sebastian kit
+    ACTION_IF (is_ee OR is_tobex) BEGIN
+      OUTER_SET kits_lim_256  = 0
+    END ELSE BEGIN
+      OUTER_SET kits_lim_256  = 1
+    END
 
-		/* ------------------------------------------- *
-		 *    EET chapters continuity compatibility    *
-		 * ------------------------------------------- */
-		ACTION_IF is_eet BEGIN
-			OUTER_SET bg2_chapter = 12
-		END ELSE BEGIN
-			OUTER_SET bg2_chapter = 0
-		END
-		OUTER_FOR (i = 1 ; i <= 10 ; ++i) BEGIN
-			OUTER_SET bg2_chapter = bg2_chapter + 1
-			OUTER_SPRINT name_source ~bg2_chapter_%i%~
-			OUTER_SET EVAL ~%name_source%~ = bg2_chapter
-		END
+    /* ------------------------------------------- *
+     *    EET chapters continuity compatibility    *
+     * ------------------------------------------- */
+    ACTION_IF is_eet BEGIN
+      OUTER_SET bg2_chapter = 12
+    END ELSE BEGIN
+      OUTER_SET bg2_chapter = 0
+    END
+    OUTER_FOR (i = 1 ; i <= 10 ; ++i) BEGIN
+      OUTER_SET bg2_chapter = bg2_chapter + 1
+      OUTER_SPRINT name_source ~bg2_chapter_%i%~
+      OUTER_SET EVAL ~%name_source%~ = bg2_chapter
+    END
 
-		/* --------------------------------------------------------------------------------------------- *
-		 *    Convert strings to UTF-8 for BGEE/BG2EE                                                    *
-		 *    No exception, everything needs to be converted                                             *
-		 *    setup.tra contains in game texts as well as installation texts and needs to be converted   *
-		 * --------------------------------------------------------------------------------------------- */
-		ACTION_DEFINE_ARRAY fhl#noconvert BEGIN END
-		// any tra files used in LANGUAGE need to be reloaded after UTF-8 conversion
-		ACTION_DEFINE_ARRAY fhl#reload BEGIN setup END
+    /* --------------------------------------------------------------------------------------------- *
+     *    Convert strings from UTF-8 for original games                                              *
+     *    No exception, everything needs to be converted                                             *
+     *    setup.tra contains in game texts as well as installation texts and needs to be converted   *
+     * --------------------------------------------------------------------------------------------- */
+    ACTION_DEFINE_ARRAY fhl#reload BEGIN setup END
 
-		LAF HANDLE_CHARSETS
-			INT_VAR
-				infer_charsets = 1
-			STR_VAR
-				tra_path = EVAL ~%MOD_FOLDER%/lang~
-				noconvert_array = fhl#noconvert
-				reload_array = fhl#reload
-		END
+    LAF HANDLE_CHARSETS
+      INT_VAR
+        infer_charsets    = 1
+        from_utf8         = 1
+      STR_VAR
+        default_language  = ~english~
+        tra_path          = ~luxleysoa/lang~
+        out_path          = ~weidu_external/luxleysoa/lang~
+        reload_array      = ~fhl#reload~
+    END
 
-	END
+    ACTION_IF (GAME_IS ~bg2ee eet~) BEGIN
+      OUTER_TEXT_SPRINT tra_location ~luxleysoa/lang~
+    END ELSE BEGIN
+      OUTER_TEXT_SPRINT tra_location ~weidu_external/luxleysoa/lang~
+    END
+
+  END
 
 END
 
-
-AUTO_TRA ~luxleysoa/lang/%s~
+AUTO_TRA ~%tra_location%/%s~
 
 // Languages
 LANGUAGE ~English~
          ~english~
          ~luxleysoa/lang/english/setup.tra~
-LANGUAGE ~Russian (by Austin)~
+
+LANGUAGE ~Russian (translation by Austin)~
          ~russian~
-         ~luxleysoa/lang/russian/setup.tra~		 
-		 
+         ~luxleysoa/lang/english/setup.tra~
+         ~luxleysoa/lang/russian/setup.tra~
+
 
 
 /* ====================================================== *

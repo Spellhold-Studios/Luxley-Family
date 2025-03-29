@@ -176,8 +176,8 @@ END
 CHAIN IF ~Global("FHLW3Haer","GLOBAL",0)
 See("Haerdalis")
 InParty("Haerdalis")
-!StateCheck("Haerdalis",CD_STATE_NOTVALID)~ THEN FHLW3 FHLW3 FHLW3Haer
-~Whatever happened to you, sir? You've got scars all over you!~
+!StateCheck("Haerdalis",CD_STATE_NOTVALID)~ THEN FHLW3 FHLW3Haer
+@43
 DO ~SetGlobal("FHLW3Haer","GLOBAL",1)~
 == HAERDAJ
 @44

@@ -115,6 +115,7 @@ Note that there is adult content in this mod, but all of it is voluntary on the 
 
 **Contributors**  
 
+- Gwendolyne &nbsp;&ndash;&nbsp; coding and maintenance (version 2.0)
 - skellytz &nbsp;&ndash;&nbsp; maintenance (version 2.1)
 
 **Translators**  
